@@ -1,3 +1,5 @@
+import sun.jvm.hotspot.runtime.VM;
+
 import java.util.Arrays;
 
 class Neural{
@@ -17,6 +19,7 @@ class Neural{
 
             Double[] outputs = Flag100Function(weights, x1, x2); // ua, va, ub, vb, uc, vc
             printer(outputs);
+
         } else if (args.length == 13 && args[0].equals("200")){
             Double[] weights = readWeights(args);
 
@@ -30,10 +33,55 @@ class Neural{
             Double[] OP = Flag200Function(FLAG100OP[5], y);
             printer(OP);
 
+        } else if (args.length == 13 && args[0].equals("300")) {
+            Double[] weights = readWeights(args);
+
+            // read x1 and x2
+            Double x1 = Double.parseDouble(args[10]);
+            Double x2 = Double.parseDouble(args[11]);
+            Double y = Double.parseDouble(args[12]);
+
+            // ua, va, ub, vb, uc, vc
+            Double[] FLAG100OP = Flag100Function(weights, x1, x2);
+            Double[] FLAG200OP = Flag200Function(FLAG100OP[5], y);
+
+            Double[] FLAG300OP = Flag300Function(weights, FLAG100OP, FLAG200OP);
+            printer(FLAG300OP);
+
         } else {
             System.out.println("Read the PDF for usage");
         }
     }
+
+    static private Double[] Flag300Function(Double[] w, Double[] FLAG100OP, Double[] FLAG200OP) {
+        Double[] res = new Double[4];  //Va' Ua' Vb' Ub'
+        res[0] = partialHiddenVj(w[8], FLAG200OP[2]);
+        res[1] = partialHiddenUj(res[0], derivativeReLu(FLAG100OP[0]));
+        res[2] = partialHiddenVj(w[9], FLAG200OP[2]);
+        res[3] = partialHiddenUj(res[2], derivativeReLu(FLAG100OP[2]));
+        return res;
+    }
+
+    static private Double partialHiddenVj(Double weights, Double partialUk) {
+//        Double sum = 0.0;
+//        for (Double d : weights) {
+//            sum += d * partialUk;
+//        }
+        return weights * partialUk;
+    }
+
+    static private Double partialHiddenUj(Double partialVj, Double derivativeReLU) {
+        return partialVj * derivativeReLU;
+    }
+
+    static private Double derivativeReLu(Double Uj) {
+        if(Uj >= 0) {
+            return 1.0;
+        } else {
+            return 0.0;
+        }
+    }
+
 
     /**
      *
