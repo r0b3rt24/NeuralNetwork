@@ -149,7 +149,6 @@ class Neural{
                 Double[] FLAG400OP = FLag400Function(FLAG100OP, FLAG200OP, FLAG300OP, x1, x2);  // w1' w2' ... w9'
                 Double[] FLAG500OP = newWs(n, weights, FLAG400OP);  // w1' w2' ... w9'
                 printer(sinfo);
-                System.out.println();
                 weights = FLAG500OP;
                 weightsPrinter(weights);
                 formatPrinter(evaluationSetE(weights));
@@ -264,11 +263,12 @@ class Neural{
     }
 
     static private void weightsPrinter(Double[] w) {
-        for (int i = 1; i < w.length; i ++) {
+        for (int i = 1; i < w.length-1; i ++) {
             String out =String.format("%.5f", w[i]);
             System.out.print(out+" ");
         }
-        System.out.println();
+        String out =String.format("%.5f", w[w.length-1]);
+        System.out.println(out);
     }
 
     static private Double[] newWs (Double n, Double[] oldw, Double[] pw) {
@@ -414,10 +414,15 @@ class Neural{
      * @param arr
      */
     static private void printer(Double[] arr) {
-        for (int i = 0; i < arr.length; i++) {
+        for (int i = 0; i < arr.length-1; i++) {
+            if (arr[i] == 0) {
+                arr[i] = 0.0;
+            }
             String out =String.format("%.5f", arr[i]);
             System.out.print(out+" ");
         }
+        String out =String.format("%.5f", arr[arr.length-1]);
+        System.out.println(out);
     }
 
     /**
